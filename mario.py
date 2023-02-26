@@ -13,6 +13,12 @@ def open_level(filename):
     return container
 
 
+game = pygame.Surface((600, 600))
+image = pygame.transform.scale(pygame.image.load('data/fon.jpg'), (600, 600))
+game.blit(image, (0, 0))
+
+flag = False
+
 player = Player()
 board = Board()
 maps = open_level('levels/map.txt')
@@ -44,7 +50,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_SPACE:
+                flag = not flag
+            if event.key == pygame.K_LEFT and flag:
                 if player.x - 1 < 0 and board.container[player.y][9] != '#':
                     board.replace(player.x, player.y, '.')
                     board.replace(9, player.y, '@')
@@ -56,7 +64,7 @@ while running:
                         image_board = list([i[-1]] + i[:-1] for i in image_board)
                         board.replace(player.x + 1, player.y, '.')
                         board.replace(player.x, player.y, '@')
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT and flag:
                 if player.x + 1 > 9 and board.container[player.y][0] != '#':
                     board.replace(player.x, player.y, '.')
                     board.replace(0, player.y, '@')
@@ -68,7 +76,7 @@ while running:
                         image_board = list(i[1:] + [i[0]] for i in image_board)
                         board.replace(player.x - 1, player.y, '.')
                         board.replace(player.x, player.y, '@')
-            if event.key == pygame.K_UP:
+            if event.key == pygame.K_UP and flag:
                 if player.y - 1 < 0 and board.container[player.y][9] != '#':
                     board.replace(player.x, player.y, '.')
                     board.replace(player.x, 9, '@')
@@ -80,7 +88,7 @@ while running:
                         image_board = [image_board[-1]] + image_board[:-1]
                         board.replace(player.x, player.y + 1, '.')
                         board.replace(player.x, player.y, '@')
-            if event.key == pygame.K_DOWN:
+            if event.key == pygame.K_DOWN and flag:
                 if player.y + 1 > 9 and board.container[player.y][0] != '#':
                     board.replace(player.x, player.y, '.')
                     board.replace(player.x, 0, '@')
@@ -92,18 +100,20 @@ while running:
                         image_board = image_board[1:] + [image_board[0]]
                         board.replace(player.x, player.y - 1, '.')
                         board.replace(player.x, player.y, '@')
-
-    screen.fill((0, 0, 0))
-    for i in range(len(image_board)):
-        for j in range(len(image_board[i])):
-            if image_board[i][j] == '#':
-                image = pygame.image.load('data/box.png').convert()
-                map_screen.blit(image, (50 * j, 50 * i))
-            if image_board[i][j] == '.':
-                image = pygame.image.load('data/grass.png').convert()
-                map_screen.blit(image, (50 * j, 50 * i))
-    mario = pygame.image.load('data/mar.png').convert_alpha()
-    map_screen.blit(mario, (215, 205))
-    screen.blit(map_screen, (50, 50))
+    if flag:
+        screen.fill((0, 0, 0))
+        for i in range(len(image_board)):
+            for j in range(len(image_board[i])):
+                if image_board[i][j] == '#':
+                    image = pygame.image.load('data/box.png').convert()
+                    map_screen.blit(image, (50 * j, 50 * i))
+                if image_board[i][j] == '.':
+                    image = pygame.image.load('data/grass.png').convert()
+                    map_screen.blit(image, (50 * j, 50 * i))
+        mario = pygame.image.load('data/mar.png').convert_alpha()
+        map_screen.blit(mario, (215, 205))
+        screen.blit(map_screen, (50, 50))
+    else:
+        screen.blit(game, (0, 0))
     pygame.display.flip()
 pygame.quit()
